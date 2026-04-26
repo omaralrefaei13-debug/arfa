@@ -98,7 +98,7 @@
 
     <!-- Floating Refresh -->
     <button onclick="syncData()" id="refreshBtn" class="fixed bottom-8 left-8 z-[1000] grad-primary text-white p-5 rounded-full active:scale-90 transition-all shadow-xl group">
-        <i data-lucide="refresh-cw" class="w-7 h-7 group-hover:rotate-180 transition-transform duration-500 text-center"></i>
+        <i data-lucide="refresh-cw" class="w-7 h-7 group-hover:rotate-180 transition-transform duration-500 text-center text-white"></i>
     </button>
 
     <header class="premium-header sticky top-0 z-[100]">
@@ -170,7 +170,7 @@
             </div>
 
             <div class="flex gap-2 overflow-x-auto no-scrollbar py-2 bg-white/50 p-3 rounded-[2.5rem] border border-slate-100 shadow-inner text-right">
-                <button data-category="all" onclick="switchCategory('all')" class="tab-btn-pill px-6 py-4 bg-white border border-slate-200 rounded-full text-xs font-black text-slate-500 tab-active"><i data-lucide="layout-grid" class="w-4 h-4 text-center"></i> الكل</button>
+                <button data-category="all" onclick="switchCategory('all')" class="tab-btn-pill px-6 py-4 bg-white border border-slate-200 rounded-full text-xs font-black text-slate-500 tab-active"><i data-lucide="layout-grid" class="w-4 h-4"></i> الكل</button>
                 <button data-category="closed" onclick="switchCategory('closed')" class="tab-btn-pill px-6 py-4 bg-white border border-slate-200 rounded-full text-xs font-black text-slate-500"><i data-lucide="lock" class="w-4 h-4 text-rose-500"></i> مغلق</button>
                 <button data-category="tools" onclick="switchCategory('tools')" class="tab-btn-pill px-6 py-4 bg-white border border-slate-200 rounded-full text-xs font-black text-slate-500"><i data-lucide="utensils" class="w-4 h-4 text-emerald-500"></i> الأدوات والمعدات</button>
                 <button data-category="buffet" onclick="switchCategory('buffet')" class="tab-btn-pill px-6 py-4 bg-white border border-slate-200 rounded-full text-xs font-black text-slate-500"><i data-lucide="armchair" class="w-4 h-4 text-amber-500"></i> طاولات البوفية</button>
@@ -239,7 +239,7 @@
                 const entry = {
                     id: clean(col[0]).match(/\d+/)?.[0] || clean(col[0]), // A
                     timestamp: clean(col[1]), // B
-                    observer: clean(col[2]), // C
+                    observer: clean(col[2]), // C - اسم المراقب
                     contractorName: clean(col[3]), // D
                     status: clean(col[4]), // E
                     signpost: clean(col[6]), // G
@@ -258,24 +258,15 @@
                 let heatmapScore = 0;
                 const centerNum = parseInt(entry.id);
                 
-                // الأدوات
                 if(entry.toolsFail) { cats.tools.push(entry); heatmapScore++; }
-                
-                // المواقد (تؤثر على الخريطة فقط حالياً)
                 if(entry.stovesCount === "0" || entry.stovesCount.includes('لا')) heatmapScore++;
-                
-                // الثلاجة
                 if(entry.freezer.includes('لا')) heatmapScore++;
-
-                // حالة الإغلاق
                 if(entry.status.includes('مغلق')) cats.closed.push(entry);
                 
-                // منطق البوفيه الصارم والمعدل للمراكز 20-25 (يعرض المتعثرين فقط في الفلتر)
                 if(centerNum >= 20 && centerNum <= 25) {
                     const isBuffetNo = entry.buffet && entry.buffet.includes('لا');
                     const hasBuffetImg = !!entry.buffetImg;
                     
-                    // التعثر: (إجابة لا) أو (نعم بدون صورة)
                     if (isBuffetNo || !hasBuffetImg) {
                         entry.buffetFail = true;
                         cats.buffet.push(entry);
@@ -285,7 +276,6 @@
                     }
                 }
 
-                // الصيانة (26 و 102)
                 if(MAINTENANCE_CENTERS.includes(entry.id)) {
                     entry.isMaintenance = true;
                     cats.maintenance.push(entry);
@@ -339,7 +329,7 @@
                 return d.id.includes(query) || d.observer?.toLowerCase().includes(query) || d.contractorName?.toLowerCase().includes(query);
             });
             
-            if (filtered.length === 0) { container.innerHTML = `<div class="col-span-full py-32 text-center text-slate-300 font-black italic text-right">لا توجد تعثرات مطابقة في هذا التصنيف</div>`; return; }
+            if (filtered.length === 0) { container.innerHTML = `<div class="col-span-full py-32 text-center text-slate-300 font-black italic text-right">لا توجد سجلات مطابقة في هذا التصنيف</div>`; return; }
 
             container.innerHTML = filtered.map(item => {
                 const centerNum = parseInt(item.id);
@@ -389,7 +379,7 @@
                             </div>
                             <div class="flex items-center gap-2 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100 shadow-sm text-right">
                                 <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-600 text-center"></i>
-                                <span class="text-[11px] font-black text-slate-500">المراقب: {item.observer}</span>
+                                <span class="text-[11px] font-black text-slate-500">المراقب: ${item.observer}</span>
                             </div>
                         </div>
 
@@ -410,7 +400,7 @@
                             ` : (isReady && !isClosed ? `
                                 <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-100 p-4 rounded-2xl border-r-4 border-r-emerald-500 shadow-inner mb-2 text-center justify-center">
                                     <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse"></div>
-                                    <span class="text-[12px] font-black text-emerald-600 uppercase tracking-widest uppercase">مكتمل الجاهزية الميدانية</span>
+                                    <span class="text-[12px] font-black text-emerald-600 uppercase tracking-widest">مكتمل الجاهزية الميدانية</span>
                                 </div>
                             ` : '')}
 
