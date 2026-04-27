@@ -102,7 +102,7 @@
     <div id="loading" class="loading-overlay">
         <div class="text-center">
             <div class="w-16 h-16 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mx-auto mb-4"></div>
-            <p class="text-white font-black text-sm tracking-widest text-center">جاري تطبيق التحديثات الاستثنائية...</p>
+            <p class="text-white font-black text-sm tracking-widest text-center">جاري تحديث الرصد الميداني...</p>
         </div>
     </div>
 
@@ -118,7 +118,7 @@
                     <i data-lucide="map-pin" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-black text-white leading-none tracking-tight">مرصد تجهيزات عرفات 2026</h1>
+                    <h1 class="text-xl font-black text-white leading-none tracking-tight text-right">مرصد تجهيزات عرفات 2026</h1>
                     <p id="liveStatusText" class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mt-1.5 flex items-center gap-1.5 text-right">
                         <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
                         مزامنة حية
@@ -196,8 +196,8 @@
     <script>
         const CONST_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR4MimFjohpaVG6DdIyoeSCwyCrZDX3CL4mEZQ42QHgZCG2r6u6-TQ0SOlY77wJOgP_8zMNgEy1to3e/pub?gid=525538098&single=true&output=csv"; 
         
-        // أرقام المراكز التي تحت الصيانة (تم استبعاد مركز 99 بطلبك)
-        const MAINTENANCE_CENTERS = ["26", "102"];
+        // أرقام المراكز التي تحت الصيانة (تم إفراغ القائمة حالياً بناءً على طلبك لـ 26 و 102)
+        const MAINTENANCE_CENTERS = [];
 
         let allEntries = [];
         let reportData = { closed: [], tools: [], freezer: [], buffet: [], maintenance: [] };
@@ -272,9 +272,17 @@
                 let heatmapScore = 0;
                 const centerNum = parseInt(entry.id);
                 
-                // --- استثناءات خاصة لمركز 99 ---
+                // --- استثناءات خاصة لمركز 99 و 26 و 102 ---
                 if (entry.id === "99") {
                     entry.status = "لا يوجد مطبخ";
+                    entry.toolsFail = false;
+                    entry.stovesCount = "مكتمل";
+                    entry.freezer = "نعم";
+                    entry.buffet = "نعم";
+                    entry.heatmapScore = 0;
+                    entry.isMaintenance = false;
+                } else if (entry.id === "26" || entry.id === "102") {
+                    entry.status = "مفتوح";
                     entry.toolsFail = false;
                     entry.stovesCount = "مكتمل";
                     entry.freezer = "نعم";
@@ -285,7 +293,7 @@
                     // منطق التعثر الاعتيادي
                     if(entry.toolsFail) { cats.tools.push(entry); heatmapScore++; }
                     if(entry.stovesCount === "0" || entry.stovesCount.includes('لا')) heatmapScore++;
-                    if(entry.freezer.includes('لا')) { cats.freezer.push(entry); } // تعثر الثلاجة خارجي فقط
+                    if(entry.freezer.includes('لا')) { cats.freezer.push(entry); } 
 
                     if(centerNum >= 20 && centerNum <= 25) {
                         const isBuffetNo = entry.buffet && entry.buffet.includes('لا');
@@ -303,7 +311,7 @@
                     }
                 }
 
-                entry.heatmapScore = entry.id === "99" ? 0 : heatmapScore;
+                entry.heatmapScore = (entry.id === "99" || entry.id === "26" || entry.id === "102") ? 0 : heatmapScore;
                 results.push(entry);
             }
             allEntries = results;
@@ -362,7 +370,6 @@
                 const isReady = item.heatmapScore === 0;
                 const isClosed = item.status.includes('مغلق');
 
-                // بناء قائمة البنود للعرض
                 const itemsList = [
                     { label: 'الشاخص الاستدلالي', fail: false, img: item.signpostImg, val: item.signpost },
                     { label: 'الأدوات والمعدات', fail: item.toolsFail, img: item.toolsImg },
@@ -386,7 +393,7 @@
                             <span class="grad-primary text-white px-5 py-1.5 rounded-2xl text-[11px] font-black shadow-lg">مركز #${item.id}</span>
                             <div class="flex items-center gap-1.5 text-slate-400 bg-slate-50 px-3 py-1 rounded-xl border border-slate-100 text-right">
                                 <i data-lucide="clock" class="w-3 h-3 text-emerald-500 text-center"></i>
-                                <span class="text-[10px] font-bold">${item.timestamp}</span>
+                                <span class="text-[10px] font-bold text-right">${item.timestamp}</span>
                             </div>
                         </div>
 
@@ -406,7 +413,7 @@
                         <div class="space-y-3 mb-6 text-right">
                             <div class="flex items-center justify-between bg-slate-50 p-3 rounded-2xl border border-slate-100 shadow-inner text-right">
                                 <div class="flex items-center gap-2 text-right">
-                                    <i data-lucide="${isClosed ? 'lock' : 'unlock'}" class="w-4 h-4 ${isClosed ? 'text-rose-500' : 'text-emerald-500'} text-right"></i>
+                                    <i data-lucide="${item.status.includes('لا يوجد') ? 'info' : (isClosed ? 'lock' : 'unlock')}" class="w-4 h-4 ${isClosed ? 'text-rose-500' : 'text-emerald-500'} text-right"></i>
                                     <span class="text-[10px] font-black tracking-tight text-right">حالة المطبخ:</span>
                                 </div>
                                 <span class="text-[11px] font-black ${isClosed ? 'text-rose-600' : 'text-emerald-600'} text-right">${item.status}</span>
