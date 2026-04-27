@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>مرصد تجهيزات عرفات 2026 | النسخة الاحترافية المحدثة</title>
+    <title>مرصد تجهيزات عرفات 2026 | النسخة الاحترافية</title>
     
     <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -31,6 +31,7 @@
         .grad-amber { background: linear-gradient(135deg, #f59e0b, #d97706); }
         .grad-rose { background: linear-gradient(135deg, #f43f5e, #e11d48); }
         .grad-slate { background: linear-gradient(135deg, #475569, #1e293b); }
+        .grad-cyan { background: linear-gradient(135deg, #06b6d4, #0891b2); }
 
         .glass-card {
             background: rgba(255, 255, 255, 0.9);
@@ -72,7 +73,7 @@
         .heatmap-node:active { transform: scale(0.85); }
         
         .tab-btn-pill { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
-        .tab-active { background: var(--secondary); color: white !important; box-shadow: 0 10px 15px -3px rgba(30, 41, 59, 0.1); transform: scale(1.05); }
+        .tab-active { background: var(--secondary); color: white !important; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transform: scale(1.05); }
 
         .loading-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); z-index: 9999; display: none; align-items: center; justify-content: center; }
 
@@ -85,6 +86,15 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
+
+        .kpi-card-interactive {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .kpi-card-interactive:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px -10px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body class="antialiased select-none text-right">
@@ -92,20 +102,20 @@
     <div id="loading" class="loading-overlay">
         <div class="text-center">
             <div class="w-16 h-16 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mx-auto mb-4"></div>
-            <p class="text-white font-black text-sm tracking-widest text-center">جاري تحديث الرصد الميداني المخصص...</p>
+            <p class="text-white font-black text-sm tracking-widest text-center">مزامنة بيانات عرفات...</p>
         </div>
     </div>
 
     <!-- Floating Refresh -->
     <button onclick="syncData()" id="refreshBtn" class="fixed bottom-8 left-8 z-[1000] grad-primary text-white p-5 rounded-full active:scale-90 transition-all shadow-xl group">
-        <i data-lucide="refresh-cw" class="w-7 h-7 group-hover:rotate-180 transition-transform duration-500 text-center text-white"></i>
+        <i data-lucide="refresh-cw" class="w-7 h-7 group-hover:rotate-180 transition-transform duration-500 text-center"></i>
     </button>
 
     <header class="premium-header sticky top-0 z-[100]">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center text-right">
             <div class="flex items-center gap-4 text-right">
-                <div class="grad-primary p-2.5 rounded-2xl text-white shadow-lg pulse-soft border border-white/10">
-                    <i data-lucide="map-pin" class="w-6 h-6 text-right"></i>
+                <div class="grad-primary p-2.5 rounded-2xl text-white shadow-lg pulse-soft border border-white/10 text-center">
+                    <i data-lucide="map-pin" class="w-6 h-6"></i>
                 </div>
                 <div>
                     <h1 class="text-xl font-black text-white leading-none tracking-tight">مرصد تجهيزات عرفات 2026</h1>
@@ -126,21 +136,21 @@
 
     <main class="max-w-7xl mx-auto px-6 py-8 space-y-8">
         
-        <!-- KPIs Section -->
-        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in">
-            <div class="glass-card p-6 rounded-[1.8rem] border-r-4 border-emerald-500 shadow-sm text-right">
+        <!-- KPIs Section - تم تعديله ليصبح 4 مربعات -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-in">
+            <div onclick="switchCategory('all')" class="glass-card p-6 rounded-[1.8rem] border-r-4 border-emerald-500 shadow-sm text-right kpi-card-interactive">
                 <span class="text-[10px] font-black text-slate-400 uppercase tracking-tighter block mb-2 text-right">إجمالي المراكز</span>
                 <div class="text-4xl font-black text-slate-800 text-right" id="stat-total">0</div>
             </div>
-            <div class="glass-card p-6 rounded-[1.8rem] border-r-4 border-blue-500 shadow-sm text-right">
-                <span class="text-[10px] font-black text-slate-400 uppercase tracking-tighter block mb-2 text-right">مفتوح حالياً</span>
-                <div class="text-4xl font-black text-slate-800 text-right" id="stat-open">0</div>
-            </div>
-            <div class="glass-card p-6 rounded-[1.8rem] border-r-4 border-rose-500 shadow-sm text-right">
+            <div onclick="switchCategory('closed')" class="glass-card p-6 rounded-[1.8rem] border-r-4 border-rose-500 shadow-sm text-right kpi-card-interactive">
                 <span class="text-[10px] font-black text-slate-400 uppercase tracking-tighter block mb-2 text-right">مغلق حالياً</span>
                 <div class="text-4xl font-black text-slate-800 text-right" id="stat-closed">0</div>
             </div>
-            <div class="glass-card p-6 rounded-[1.8rem] border-r-4 border-slate-600 shadow-sm text-right">
+            <div onclick="switchCategory('freezer')" class="glass-card p-6 rounded-[1.8rem] border-r-4 border-cyan-500 shadow-sm text-right kpi-card-interactive">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-tighter block mb-2 text-right">تعثرات الثلاجات</span>
+                <div class="text-4xl font-black text-slate-800 text-right" id="stat-freezer">0</div>
+            </div>
+            <div onclick="switchCategory('maintenance')" class="glass-card p-6 rounded-[1.8rem] border-r-4 border-slate-600 shadow-sm text-right kpi-card-interactive">
                 <span class="text-[10px] font-black text-slate-400 uppercase tracking-tighter block mb-2 text-right">تحت الصيانة</span>
                 <div class="text-4xl font-black text-slate-800 text-right" id="stat-maint">0</div>
             </div>
@@ -150,7 +160,7 @@
         <section class="glass-card rounded-[2.5rem] p-8 animate-in text-right">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 text-right">
                 <div class="flex items-center gap-3">
-                    <div class="bg-slate-900 p-2.5 rounded-xl text-white shadow-lg pulse-soft"><i data-lucide="grid-3x3" class="w-5 h-5"></i></div>
+                    <div class="bg-slate-900 p-2.5 rounded-xl text-white shadow-lg pulse-soft text-center"><i data-lucide="grid-3x3" class="w-5 h-5"></i></div>
                     <h2 class="text-xl font-black text-slate-800 tracking-tight text-right">خريطة جاهزية عرفات الرقمية</h2>
                 </div>
                 <div class="flex bg-slate-50 p-2 rounded-2xl border border-slate-200 gap-4 text-right text-[10px] font-black uppercase text-slate-500">
@@ -164,6 +174,7 @@
 
         <!-- Search & Filter Area -->
         <section id="explorer" class="space-y-4 animate-in text-right">
+            
             <div class="w-full relative group text-right">
                 <input type="text" id="searchInput" placeholder="بحث برقم المركز، المتعهد، أو المراقب..." class="w-full pl-6 pr-14 py-5 bg-white border-2 border-slate-100 rounded-[2rem] outline-none focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500 transition-all font-bold text-right shadow-sm group-hover:border-slate-300">
                 <i data-lucide="search" class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-emerald-500 transition-all text-right"></i>
@@ -173,8 +184,9 @@
                 <button data-category="all" onclick="switchCategory('all')" class="tab-btn-pill px-6 py-4 bg-white border border-slate-200 rounded-full text-xs font-black text-slate-500 tab-active"><i data-lucide="layout-grid" class="w-4 h-4"></i> الكل</button>
                 <button data-category="closed" onclick="switchCategory('closed')" class="tab-btn-pill px-6 py-4 bg-white border border-slate-200 rounded-full text-xs font-black text-slate-500"><i data-lucide="lock" class="w-4 h-4 text-rose-500"></i> مغلق</button>
                 <button data-category="tools" onclick="switchCategory('tools')" class="tab-btn-pill px-6 py-4 bg-white border border-slate-200 rounded-full text-xs font-black text-slate-500"><i data-lucide="utensils" class="w-4 h-4 text-emerald-500"></i> الأدوات والمعدات</button>
+                <button data-category="freezer" onclick="switchCategory('freezer')" class="tab-btn-pill px-6 py-4 bg-white border border-slate-200 rounded-full text-xs font-black text-slate-500"><i data-lucide="snowflake" class="w-4 h-4 text-cyan-500"></i> الثلاجات</button>
                 <button data-category="buffet" onclick="switchCategory('buffet')" class="tab-btn-pill px-6 py-4 bg-white border border-slate-200 rounded-full text-xs font-black text-slate-500"><i data-lucide="armchair" class="w-4 h-4 text-amber-500"></i> طاولات البوفية</button>
-                <button data-category="maintenance" onclick="switchCategory('maintenance')" class="tab-btn-pill px-6 py-4 bg-white border border-slate-200 rounded-full text-xs font-black text-slate-500"><i data-lucide="wrench" class="w-4 h-4 text-slate-500 text-center"></i> تحت الصيانة</button>
+                <button data-category="maintenance" onclick="switchCategory('maintenance')" class="tab-btn-pill px-6 py-4 bg-white border border-slate-200 rounded-full text-xs font-black text-slate-500"><i data-lucide="wrench" class="w-4 h-4 text-slate-500"></i> تحت الصيانة</button>
             </div>
             
             <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-24 text-right"></div>
@@ -183,10 +195,10 @@
 
     <script>
         const CONST_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR4MimFjohpaVG6DdIyoeSCwyCrZDX3CL4mEZQ42QHgZCG2r6u6-TQ0SOlY77wJOgP_8zMNgEy1to3e/pub?gid=525538098&single=true&output=csv"; 
-        const MAINTENANCE_CENTERS = ["26", "102"];
+        const MAINTENANCE_CENTERS = ["26", "102", "99"];
 
         let allEntries = [];
-        let reportData = { closed: [], tools: [], buffet: [], maintenance: [] };
+        let reportData = { closed: [], tools: [], freezer: [], buffet: [], maintenance: [] };
         const state = { currentCategory: 'all', searchQuery: '', isExactId: false };
 
         function switchCategory(cat) {
@@ -228,7 +240,7 @@
         function processCSV(text) {
             const lines = text.split(/\r?\n/);
             const results = [];
-            const cats = { closed: [], tools: [], buffet: [], maintenance: [] };
+            const cats = { closed: [], tools: [], freezer: [], buffet: [], maintenance: [] };
             
             for (let i = 1; i < lines.length; i++) {
                 if (!lines[i]) continue;
@@ -239,7 +251,7 @@
                 const entry = {
                     id: clean(col[0]).match(/\d+/)?.[0] || clean(col[0]), // A
                     timestamp: clean(col[1]), // B
-                    observer: clean(col[2]), // C - اسم المراقب
+                    observer: clean(col[2]), // C
                     contractorName: clean(col[3]), // D
                     status: clean(col[4]), // E
                     signpost: clean(col[6]), // G
@@ -258,15 +270,24 @@
                 let heatmapScore = 0;
                 const centerNum = parseInt(entry.id);
                 
+                // الأدوات (البند الأساسي للجاهزية)
                 if(entry.toolsFail) { cats.tools.push(entry); heatmapScore++; }
+                
+                // المواقد (تؤثر على الخريطة فقط)
                 if(entry.stovesCount === "0" || entry.stovesCount.includes('لا')) heatmapScore++;
-                if(entry.freezer.includes('لا')) heatmapScore++;
+                
+                // الثلاجة (تعثر فقط في الفلتر، لا تدخل في حسبة الخريطة الحرارية بناء على الطلب)
+                if(entry.freezer.includes('لا')) {
+                    cats.freezer.push(entry);
+                }
+
+                // حالة الإغلاق
                 if(entry.status.includes('مغلق')) cats.closed.push(entry);
                 
+                // منطق البوفيه الصارم للمراكز 20-25
                 if(centerNum >= 20 && centerNum <= 25) {
                     const isBuffetNo = entry.buffet && entry.buffet.includes('لا');
                     const hasBuffetImg = !!entry.buffetImg;
-                    
                     if (isBuffetNo || !hasBuffetImg) {
                         entry.buffetFail = true;
                         cats.buffet.push(entry);
@@ -276,6 +297,7 @@
                     }
                 }
 
+                // الصيانة (26, 102, 99)
                 if(MAINTENANCE_CENTERS.includes(entry.id)) {
                     entry.isMaintenance = true;
                     cats.maintenance.push(entry);
@@ -289,10 +311,16 @@
         }
 
         function renderAll() {
-            document.getElementById('stat-total').innerText = allEntries.length;
-            document.getElementById('stat-open').innerText = allEntries.filter(e => e.status.includes('مفتوح')).length;
-            document.getElementById('stat-closed').innerText = reportData.closed.length;
-            document.getElementById('stat-maint').innerText = reportData.maintenance.length;
+            const updateStat = (id, val) => {
+                const el = document.getElementById(id);
+                if(el) el.innerText = val;
+            };
+
+            updateStat('stat-total', allEntries.length);
+            updateStat('stat-closed', reportData.closed.length);
+            updateStat('stat-freezer', reportData.freezer.length);
+            updateStat('stat-maint', reportData.maintenance.length);
+            
             renderHeatmap();
             renderCards();
         }
@@ -303,7 +331,7 @@
                 let nodeClass = 'grad-primary shadow-[0_0_8px_#10b981]';
                 if(entry.heatmapScore === 1) nodeClass = 'grad-amber shadow-[0_0_8px_#f59e0b]';
                 else if(entry.heatmapScore > 1) nodeClass = 'grad-rose shadow-[0_0_8px_#f43f5e] text-white';
-                if(entry.isMaintenance) nodeClass = 'grad-slate shadow-[0_0_8px_#475569] text-white';
+                if(entry.isMaintenance) nodeClass = 'grad-slate shadow-[0_0_8px_#475569] text-white text-right';
                 return `<div onclick="focusCard('${entry.id}')" class="heatmap-node ${nodeClass}" title="${entry.contractorName}">${entry.id}</div>`;
             }).join('');
         }
@@ -339,8 +367,7 @@
                 const itemsList = [
                     { label: 'الشاخص الاستدلالي', fail: false, img: item.signpostImg, val: item.signpost },
                     { label: 'الأدوات والمعدات', fail: item.toolsFail, img: item.toolsImg },
-                    { label: 'مواقد الطبخ', fail: (item.stovesCount === "0" || item.stovesCount.includes('لا')), img: item.stovesImg, val: item.stovesCount },
-                    { label: 'ثلاجة التجميد', fail: item.freezer.includes('لا'), img: null, val: item.freezer }
+                    { label: 'مواقد الطبخ', fail: (item.stovesCount === "0" || item.stovesCount.includes('لا')), img: item.stovesImg, val: item.stovesCount }
                 ];
                 
                 if (centerNum >= 20 && centerNum <= 25) {
@@ -359,7 +386,7 @@
 
                 return `
                     <div id="card-${item.id}" class="glass-card rounded-[2.2rem] p-7 animate-in transition-all text-right relative overflow-hidden group/card text-right">
-                        ${item.isMaintenance ? '<div class="absolute top-0 left-0 bg-slate-800 text-white px-4 py-1 text-[9px] font-black rounded-br-2xl z-10">تحت الصيانة</div>' : ''}
+                        ${item.isMaintenance ? '<div class="absolute top-0 left-0 bg-slate-800 text-white px-4 py-1 text-[9px] font-black rounded-br-2xl z-10 text-right">تحت الصيانة</div>' : ''}
                         ${!isReady || isClosed ? '<div class="absolute top-0 right-0 w-2 h-full bg-rose-500 shadow-lg"></div>' : ''}
                         
                         <div class="flex justify-between items-start mb-5 text-right">
@@ -375,11 +402,11 @@
                         <div class="flex flex-wrap gap-3 mb-6 text-right">
                             <div class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 shadow-sm text-center">
                                 <i data-lucide="map-pin" class="w-3.5 h-3.5 text-rose-500 text-center"></i>
-                                <span class="text-[11px] font-black text-slate-600 uppercase tracking-tighter">شاخص: ${item.signpost || '---'}</span>
+                                <span class="text-[11px] font-black text-slate-600 uppercase tracking-tighter text-right">شاخص: ${item.signpost || '---'}</span>
                             </div>
                             <div class="flex items-center gap-2 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100 shadow-sm text-right">
-                                <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-600 text-center"></i>
-                                <span class="text-[11px] font-black text-slate-500">المراقب: ${item.observer}</span>
+                                <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-600 text-center text-right"></i>
+                                <span class="text-[11px] font-black text-slate-500 text-right">المراقب: ${item.observer}</span>
                             </div>
                         </div>
 
@@ -387,20 +414,20 @@
                             <div class="flex items-center justify-between bg-slate-50 p-3 rounded-2xl border border-slate-100 shadow-inner text-right">
                                 <div class="flex items-center gap-2 text-right">
                                     <i data-lucide="${isClosed ? 'lock' : 'unlock'}" class="w-4 h-4 ${isClosed ? 'text-rose-500' : 'text-emerald-500'} text-right"></i>
-                                    <span class="text-[10px] font-black tracking-tight">حالة المطبخ:</span>
+                                    <span class="text-[10px] font-black tracking-tight text-right">حالة المطبخ:</span>
                                 </div>
-                                <span class="text-[11px] font-black ${isClosed ? 'text-rose-600' : 'text-emerald-600'}">${item.status}</span>
+                                <span class="text-[11px] font-black ${isClosed ? 'text-rose-600' : 'text-emerald-600'} text-right">${item.status}</span>
                             </div>
 
                             ${item.isMaintenance ? `
-                                <div class="flex items-center gap-2 bg-slate-100 border border-slate-200 p-4 rounded-2xl border-r-4 border-r-slate-800 shadow-inner mb-2 text-center justify-center">
-                                    <div class="w-2.5 h-2.5 rounded-full bg-slate-800 shadow-[0_0_10px_#1e293b] animate-pulse"></div>
-                                    <span class="text-[12px] font-black text-slate-800 uppercase tracking-widest">المطبخ تحت الصيانة</span>
+                                <div class="flex items-center gap-2 bg-slate-100 border border-slate-200 p-4 rounded-2xl border-r-4 border-r-slate-800 shadow-inner mb-2 text-center justify-center text-right">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-slate-800 shadow-[0_0_10px_#1e293b] animate-pulse text-right"></div>
+                                    <span class="text-[12px] font-black text-slate-800 uppercase tracking-widest text-right">المطبخ تحت الصيانة</span>
                                 </div>
                             ` : (isReady && !isClosed ? `
-                                <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-100 p-4 rounded-2xl border-r-4 border-r-emerald-500 shadow-inner mb-2 text-center justify-center">
-                                    <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse"></div>
-                                    <span class="text-[12px] font-black text-emerald-600 uppercase tracking-widest">مكتمل الجاهزية الميدانية</span>
+                                <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-100 p-4 rounded-2xl border-r-4 border-r-emerald-500 shadow-inner mb-2 text-center justify-center text-right text-right">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse text-right"></div>
+                                    <span class="text-[12px] font-black text-emerald-600 uppercase tracking-widest text-right uppercase">مكتمل الجاهزية الميدانية</span>
                                 </div>
                             ` : '')}
 
@@ -411,24 +438,24 @@
                                     <div class="flex flex-col bg-white border border-slate-100 p-3 rounded-2xl shadow-sm text-right">
                                         <div class="flex items-center justify-between mb-2 text-right">
                                             <div class="flex items-center gap-2 text-right">
-                                                <div class="w-2 h-2 rounded-full ${f.fail ? 'bg-rose-500 shadow-[0_0_6px_#ef4444]' : 'bg-emerald-500 shadow-[0_0_6px_#10b981]'}"></div>
-                                                <span class="text-[11px] font-black ${f.fail ? 'text-rose-600' : 'text-slate-700'}">${f.label}</span>
+                                                <div class="w-2 h-2 rounded-full ${f.fail ? 'bg-rose-500 shadow-[0_0_6px_#ef4444]' : 'bg-emerald-500 shadow-[0_0_6px_#10b981]'} text-right"></div>
+                                                <span class="text-[11px] font-black ${f.fail ? 'text-rose-600' : 'text-slate-700'} text-right">${f.label}</span>
                                             </div>
-                                            <span class="text-[9px] font-bold ${f.fail ? 'text-rose-400' : 'text-emerald-500'}">${f.fail ? 'تعثر' : 'مكتمل'}</span>
+                                            <span class="text-[9px] font-bold ${f.fail ? 'text-rose-400' : 'text-emerald-500'} text-right">${f.fail ? 'تعثر' : 'مكتمل'}</span>
                                         </div>
                                         ${f.img ? `
                                             <a href="${f.img}" target="_blank" class="flex items-center justify-center gap-2 bg-slate-50 border border-slate-100 py-2 rounded-xl text-[10px] font-black text-blue-600 hover:bg-blue-50 transition-colors shadow-sm text-center">
                                                 <i data-lucide="image" class="w-3 h-3 text-center"></i> عرض صورة الإثبات
                                             </a>
-                                        ` : (f.val ? `<div class="text-right text-[10px] text-slate-500 font-bold px-2">${f.val}</div>` : `<div class="text-center py-2 text-[9px] text-slate-300 italic font-bold">لا يوجد مرفق بصري</div>`)}
+                                        ` : (f.val ? `<div class="text-right text-[10px] text-slate-500 font-bold px-2 text-right">${f.val}</div>` : `<div class="text-center py-2 text-[9px] text-slate-300 italic font-bold text-center">لا يوجد مرفق بصري</div>`)}
                                     </div>
                                 `).join('')}
                             </div>
                         </div>
 
-                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 mb-2 text-right shadow-inner">
-                            <div class="flex items-center gap-1.5 mb-1 text-right">
-                                <i data-lucide="message-square" class="w-3 h-3 text-slate-400 text-center"></i>
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 mb-2 text-right shadow-inner text-right">
+                            <div class="flex items-center gap-1.5 mb-1 text-right text-right">
+                                <i data-lucide="message-square" class="w-3 h-3 text-slate-400 text-right"></i>
                                 <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest text-right text-right">ملاحظة ميدانية</span>
                             </div>
                             <p class="text-[11px] font-bold text-slate-500 leading-relaxed italic text-right text-right">${item.note}</p>
