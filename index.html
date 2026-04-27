@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>مرصد تجهيزات عرفات 2026 | النسخة الاحترافية</title>
+    <title>مرصد تجهيزات عرفات 2026 | النسخة الاحترافية المحدثة</title>
     
     <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -102,13 +102,13 @@
     <div id="loading" class="loading-overlay">
         <div class="text-center">
             <div class="w-16 h-16 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mx-auto mb-4"></div>
-            <p class="text-white font-black text-sm tracking-widest text-center">مزامنة بيانات عرفات...</p>
+            <p class="text-white font-black text-sm tracking-widest text-center">جاري تطبيق التحديثات الاستثنائية...</p>
         </div>
     </div>
 
     <!-- Floating Refresh -->
     <button onclick="syncData()" id="refreshBtn" class="fixed bottom-8 left-8 z-[1000] grad-primary text-white p-5 rounded-full active:scale-90 transition-all shadow-xl group">
-        <i data-lucide="refresh-cw" class="w-7 h-7 group-hover:rotate-180 transition-transform duration-500 text-center"></i>
+        <i data-lucide="refresh-cw" class="w-7 h-7 group-hover:rotate-180 transition-transform duration-500 text-center text-white"></i>
     </button>
 
     <header class="premium-header sticky top-0 z-[100]">
@@ -128,7 +128,7 @@
             <div class="hidden md:block bg-white/5 border border-white/10 px-5 py-2.5 rounded-2xl text-right backdrop-blur-md">
                 <div class="flex items-center gap-2.5">
                     <i data-lucide="clock" class="w-4 h-4 text-slate-400 text-right"></i>
-                    <span id="currentTime" class="text-xs font-black text-slate-200 tracking-wider">00:00:00 AM</span>
+                    <span id="currentTime" class="text-xs font-black text-slate-200 tracking-wider text-right">00:00:00 AM</span>
                 </div>
             </div>
         </div>
@@ -136,7 +136,7 @@
 
     <main class="max-w-7xl mx-auto px-6 py-8 space-y-8">
         
-        <!-- KPIs Section - تم تعديله ليصبح 4 مربعات -->
+        <!-- KPIs Section -->
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-in">
             <div onclick="switchCategory('all')" class="glass-card p-6 rounded-[1.8rem] border-r-4 border-emerald-500 shadow-sm text-right kpi-card-interactive">
                 <span class="text-[10px] font-black text-slate-400 uppercase tracking-tighter block mb-2 text-right">إجمالي المراكز</span>
@@ -160,7 +160,7 @@
         <section class="glass-card rounded-[2.5rem] p-8 animate-in text-right">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 text-right">
                 <div class="flex items-center gap-3">
-                    <div class="bg-slate-900 p-2.5 rounded-xl text-white shadow-lg pulse-soft text-center"><i data-lucide="grid-3x3" class="w-5 h-5"></i></div>
+                    <div class="bg-slate-900 p-2.5 rounded-xl text-white shadow-lg text-center"><i data-lucide="grid-3x3" class="w-5 h-5"></i></div>
                     <h2 class="text-xl font-black text-slate-800 tracking-tight text-right">خريطة جاهزية عرفات الرقمية</h2>
                 </div>
                 <div class="flex bg-slate-50 p-2 rounded-2xl border border-slate-200 gap-4 text-right text-[10px] font-black uppercase text-slate-500">
@@ -195,7 +195,9 @@
 
     <script>
         const CONST_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR4MimFjohpaVG6DdIyoeSCwyCrZDX3CL4mEZQ42QHgZCG2r6u6-TQ0SOlY77wJOgP_8zMNgEy1to3e/pub?gid=525538098&single=true&output=csv"; 
-        const MAINTENANCE_CENTERS = ["26", "102", "99"];
+        
+        // أرقام المراكز التي تحت الصيانة (تم استبعاد مركز 99 بطلبك)
+        const MAINTENANCE_CENTERS = ["26", "102"];
 
         let allEntries = [];
         let reportData = { closed: [], tools: [], freezer: [], buffet: [], maintenance: [] };
@@ -249,61 +251,59 @@
                 const clean = (v) => v ? v.replace(/"/g, '').trim() : "";
                 
                 const entry = {
-                    id: clean(col[0]).match(/\d+/)?.[0] || clean(col[0]), // A
-                    timestamp: clean(col[1]), // B
-                    observer: clean(col[2]), // C
-                    contractorName: clean(col[3]), // D
-                    status: clean(col[4]), // E
-                    signpost: clean(col[6]), // G
-                    signpostImg: getImgUrl(clean(col[7])), // H
-                    stovesCount: clean(col[8]), // I
-                    stovesImg: getImgUrl(clean(col[9])), // J
-                    firewood: clean(col[10]), // K
-                    freezer: clean(col[11]), // L
-                    toolsFail: clean(col[12]).includes('لا'), // M
-                    toolsImg: getImgUrl(clean(col[13])), // N
-                    note: clean(col[15]) || "لا توجد ملاحظات", // P
-                    buffet: clean(col[16]), // Q
-                    buffetImg: getImgUrl(clean(col[17])), // R
+                    id: clean(col[0]).match(/\d+/)?.[0] || clean(col[0]),
+                    timestamp: clean(col[1]),
+                    observer: clean(col[2]),
+                    contractorName: clean(col[3]),
+                    status: clean(col[4]),
+                    signpost: clean(col[6]),
+                    signpostImg: getImgUrl(clean(col[7])),
+                    stovesCount: clean(col[8]),
+                    stovesImg: getImgUrl(clean(col[9])),
+                    firewood: clean(col[10]),
+                    freezer: clean(col[11]),
+                    toolsFail: clean(col[12]).includes('لا'),
+                    toolsImg: getImgUrl(clean(col[13])),
+                    note: clean(col[15]) || "لا توجد ملاحظات",
+                    buffet: clean(col[16]),
+                    buffetImg: getImgUrl(clean(col[17])),
                 };
 
                 let heatmapScore = 0;
                 const centerNum = parseInt(entry.id);
                 
-                // الأدوات (البند الأساسي للجاهزية)
-                if(entry.toolsFail) { cats.tools.push(entry); heatmapScore++; }
-                
-                // المواقد (تؤثر على الخريطة فقط)
-                if(entry.stovesCount === "0" || entry.stovesCount.includes('لا')) heatmapScore++;
-                
-                // الثلاجة (تعثر فقط في الفلتر، لا تدخل في حسبة الخريطة الحرارية بناء على الطلب)
-                if(entry.freezer.includes('لا')) {
-                    cats.freezer.push(entry);
-                }
+                // --- استثناءات خاصة لمركز 99 ---
+                if (entry.id === "99") {
+                    entry.status = "لا يوجد مطبخ";
+                    entry.toolsFail = false;
+                    entry.stovesCount = "مكتمل";
+                    entry.freezer = "نعم";
+                    entry.buffet = "نعم";
+                    entry.heatmapScore = 0;
+                    entry.isMaintenance = false;
+                } else {
+                    // منطق التعثر الاعتيادي
+                    if(entry.toolsFail) { cats.tools.push(entry); heatmapScore++; }
+                    if(entry.stovesCount === "0" || entry.stovesCount.includes('لا')) heatmapScore++;
+                    if(entry.freezer.includes('لا')) { cats.freezer.push(entry); } // تعثر الثلاجة خارجي فقط
 
-                // حالة الإغلاق
-                if(entry.status.includes('مغلق')) cats.closed.push(entry);
-                
-                // منطق البوفيه الصارم للمراكز 20-25
-                if(centerNum >= 20 && centerNum <= 25) {
-                    const isBuffetNo = entry.buffet && entry.buffet.includes('لا');
-                    const hasBuffetImg = !!entry.buffetImg;
-                    if (isBuffetNo || !hasBuffetImg) {
-                        entry.buffetFail = true;
-                        cats.buffet.push(entry);
-                        heatmapScore++;
-                    } else {
-                        entry.buffetFail = false; 
+                    if(centerNum >= 20 && centerNum <= 25) {
+                        const isBuffetNo = entry.buffet && entry.buffet.includes('لا');
+                        const hasBuffetImg = !!entry.buffetImg;
+                        if (isBuffetNo || !hasBuffetImg) {
+                            entry.buffetFail = true;
+                            cats.buffet.push(entry);
+                            heatmapScore++;
+                        }
+                    }
+                    if(entry.status.includes('مغلق')) cats.closed.push(entry);
+                    if(MAINTENANCE_CENTERS.includes(entry.id)) {
+                        entry.isMaintenance = true;
+                        cats.maintenance.push(entry);
                     }
                 }
 
-                // الصيانة (26, 102, 99)
-                if(MAINTENANCE_CENTERS.includes(entry.id)) {
-                    entry.isMaintenance = true;
-                    cats.maintenance.push(entry);
-                }
-
-                entry.heatmapScore = heatmapScore;
+                entry.heatmapScore = entry.id === "99" ? 0 : heatmapScore;
                 results.push(entry);
             }
             allEntries = results;
@@ -315,12 +315,10 @@
                 const el = document.getElementById(id);
                 if(el) el.innerText = val;
             };
-
             updateStat('stat-total', allEntries.length);
             updateStat('stat-closed', reportData.closed.length);
             updateStat('stat-freezer', reportData.freezer.length);
             updateStat('stat-maint', reportData.maintenance.length);
-            
             renderHeatmap();
             renderCards();
         }
@@ -331,7 +329,7 @@
                 let nodeClass = 'grad-primary shadow-[0_0_8px_#10b981]';
                 if(entry.heatmapScore === 1) nodeClass = 'grad-amber shadow-[0_0_8px_#f59e0b]';
                 else if(entry.heatmapScore > 1) nodeClass = 'grad-rose shadow-[0_0_8px_#f43f5e] text-white';
-                if(entry.isMaintenance) nodeClass = 'grad-slate shadow-[0_0_8px_#475569] text-white text-right';
+                if(entry.isMaintenance) nodeClass = 'grad-slate shadow-[0_0_8px_#475569] text-white';
                 return `<div onclick="focusCard('${entry.id}')" class="heatmap-node ${nodeClass}" title="${entry.contractorName}">${entry.id}</div>`;
             }).join('');
         }
@@ -357,17 +355,18 @@
                 return d.id.includes(query) || d.observer?.toLowerCase().includes(query) || d.contractorName?.toLowerCase().includes(query);
             });
             
-            if (filtered.length === 0) { container.innerHTML = `<div class="col-span-full py-32 text-center text-slate-300 font-black italic text-right">لا توجد سجلات مطابقة في هذا التصنيف</div>`; return; }
+            if (filtered.length === 0) { container.innerHTML = `<div class="col-span-full py-32 text-center text-slate-300 font-black italic text-right">لا توجد سجلات مطابقة</div>`; return; }
 
             container.innerHTML = filtered.map(item => {
                 const centerNum = parseInt(item.id);
                 const isReady = item.heatmapScore === 0;
                 const isClosed = item.status.includes('مغلق');
 
+                // بناء قائمة البنود للعرض
                 const itemsList = [
                     { label: 'الشاخص الاستدلالي', fail: false, img: item.signpostImg, val: item.signpost },
                     { label: 'الأدوات والمعدات', fail: item.toolsFail, img: item.toolsImg },
-                    { label: 'مواقد الطبخ', fail: (item.stovesCount === "0" || item.stovesCount.includes('لا')), img: item.stovesImg, val: item.stovesCount }
+                    { label: 'مواقد الطبخ', fail: (item.stovesCount === "0" || (typeof item.stovesCount === 'string' && item.stovesCount.includes('لا'))), img: item.stovesImg, val: item.stovesCount }
                 ];
                 
                 if (centerNum >= 20 && centerNum <= 25) {
@@ -375,13 +374,7 @@
                     const hasBuffetImg = !!item.buffetImg;
                     const isBuffetFail = isBuffetNo || !hasBuffetImg;
                     const statusText = !hasBuffetImg && !isBuffetNo ? " (الإثبات الميداني مفقود)" : "";
-                    
-                    itemsList.push({ 
-                        label: 'طاولات البوفية' + statusText, 
-                        fail: isBuffetFail, 
-                        img: item.buffetImg, 
-                        val: item.buffet 
-                    });
+                    itemsList.push({ label: 'طاولات البوفية' + statusText, fail: isBuffetFail, img: item.buffetImg, val: item.buffet });
                 }
 
                 return `
